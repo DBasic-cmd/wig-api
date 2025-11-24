@@ -7,6 +7,9 @@ import { connectDB } from './config/db.js';
 import authRoutes from './routes/auth.js';
 import productRoutes from './routes/product.js';
 import { swaggerSpec, swaggerUiMiddleware } from "./swagger.js";
+import cartRoutes from './routes/cart.js';
+import favoritesRoutes from './routes/favorites.js';
+
 dotenv.config();
 
 // 2. Import core libraries
@@ -29,6 +32,8 @@ app.use("/herhair-docs", swaggerUiMiddleware.serve, swaggerUiMiddleware.setup(sw
 // 6. Define a simple test route
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/favorites', favoritesRoutes);
 connectDB();
 
 // 7. Start the server
