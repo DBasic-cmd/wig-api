@@ -31,6 +31,9 @@ app.use(cors());
 app.use("/herhair-docs", swaggerUiMiddleware.serve, swaggerUiMiddleware.setup(swaggerSpec));
 
 // 6. Define a simple test route
+app.get("/", (req, res) => {
+  res.send("Wig backend is running!");
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
