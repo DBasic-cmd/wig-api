@@ -1,5 +1,10 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const options = {
   definition: {
@@ -11,8 +16,10 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:5000",
-      },
+    url: process.env.NODE_ENV === "production"
+      ? "https://your-render-app.onrender.com"
+      : "http://localhost:5000",
+  },
     ],
     components: {
       securitySchemes: {
@@ -25,7 +32,8 @@ const options = {
     },
     security: [{ bearerAuth: [] }],
   },
-  apis: ["./routes/*.js"], // <-- Your route files
+  // Use an absolute path so swagger-jsdoc can find the route files
+  apis: [path.join(__dirname, 'routes', '*.js')],
 };
 
 export const swaggerSpec = swaggerJsdoc(options);

@@ -7,6 +7,10 @@ import { connectDB } from './config/db.js';
 import authRoutes from './routes/auth.js';
 import productRoutes from './routes/product.js';
 import { swaggerSpec, swaggerUiMiddleware } from "./swagger.js";
+import cartRoutes from './routes/cart.js';
+import favoritesRoutes from './routes/favorites.js';
+import categoryRoutes from './routes/category.js';
+
 dotenv.config();
 
 // 2. Import core libraries
@@ -27,8 +31,14 @@ app.use(cors());
 app.use("/herhair-docs", swaggerUiMiddleware.serve, swaggerUiMiddleware.setup(swaggerSpec));
 
 // 6. Define a simple test route
+app.get("/", (req, res) => {
+  res.send("Wig backend is running!");
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/favorites', favoritesRoutes);
+app.use('/api/categories', categoryRoutes);
 connectDB();
 
 // 7. Start the server
