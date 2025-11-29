@@ -19,13 +19,9 @@ const PORT = process.env.PORT ?? 5000;
 app.use(express.json());
 
 // CORS: open to all origins for team-friendly dev/testing
-// app.use(cors({
-//   origin: '*' // Later you can restrict to frontend domain
-// }));
+app.use(cors());
 
-// Swagger docs
-app.use("/herhair-docs", swaggerUiMiddleware.serve, swaggerUiMiddleware.setup(swaggerSpec));
-
+// Ensure CORS headers and handle preflight requests
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*"); // allow all origins
   res.header(
@@ -41,6 +37,9 @@ app.use((req, res, next) => {
 
   next();
 });
+
+// Swagger docs (after CORS middleware so Try-it-out can call the API)
+app.use("/herhair-docs", swaggerUiMiddleware.serve, swaggerUiMiddleware.setup(swaggerSpec));
 
 
 // Test route
