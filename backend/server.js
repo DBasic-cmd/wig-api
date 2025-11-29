@@ -20,9 +20,22 @@ const PORT = process.env.PORT ?? 5000;
 app.use(express.json());
 
 // CORS: open to all origins for team-friendly dev/testing
-app.use(cors({
-  origin: '*' // Later you can restrict to frontend domain
-}));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // allow all origins
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
+
 
 // Swagger docs
 app.use("/herhair-docs", swaggerUiMiddleware.serve, swaggerUiMiddleware.setup(swaggerSpec));
