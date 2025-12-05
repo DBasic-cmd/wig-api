@@ -1,5 +1,7 @@
 import express from "express";
 import Product from "../models/product.js";
+import { protect } from "../middleware/auth.js";
+import { isAdmin } from "../middleware/admin.js";
 
 const router = express.Router();
 
@@ -14,8 +16,10 @@ const router = express.Router();
  * @swagger
  * /api/products/new:
  *   post:
- *     summary: Create a new product
+ *     summary: Create a new product (admin only)
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -36,12 +40,16 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Product created
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Admin privileges required
  *       500:
  *         description: Server error
  */
 
-// Create a new product
-router.post("/new", async (req, res) => {
+// Create a new product (admin only)
+router.post("/new", protect, isAdmin, async (req, res) => {
     try {
         const { name, price, image, description, category } = req.body;
 

@@ -1,6 +1,7 @@
 import express from 'express';
 import User from '../models/user.js';
 import { protect } from '../middleware/auth.js';
+import { isAdmin } from '../middleware/admin.js';
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();
@@ -129,6 +130,61 @@ router.get("/me", protect, async (req, res) => {
  *       401:
  *         description: Unauthorized
  */
+
+/**
+ * @swagger
+ * /api/auth/admin/login:
+ *   post:
+ *     summary: Admin login
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Admin logged in successfully
+ *       401:
+ *         description: Invalid credentials or not an admin
+ *       500:
+ *         description: Server error
+ */
+router.post('/admin/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Please provide email and password' });
+        }
+        
+        const user = await User.findOne({ email });
+        if (!user || !(await user.matchPassword(password))) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+        
+        if (!user.isAdmin) {
+            return res.status(403).json({ message: 'Access denied: Admin privileges required' });
+        }
+        
+        const token = generateToken(user._id);
+        res.status(200).json({
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            token
+        });
+    } catch (error) {
+        console.error('Admin login error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 // Generate JWT Token
 const generateToken = (id) => {
