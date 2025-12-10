@@ -26,9 +26,21 @@ const productSchema = new mongoose.Schema({
         ref: "Category",
         required: true
     },
+    quantity: { type: Number, default: 0 },
+    status: {
+        type: String,
+        enum: ["in stock", "low stock", "out of stock"],
+        default: "in stock",
+    },
 
 }, { timestamps: true });
 
+productSchema.pre("save", function(next) {
+    if (this.quantity === 0) this.status = "out of stock";
+    else if (this.quantity < 5) this.status = "low stock"; // threshold for low stock
+    else this.status = "in stock";
+    next();
+});
 // Prevent OverwriteModelError
 const Product =
     mongoose.models.Product || mongoose.model("Product", productSchema);
