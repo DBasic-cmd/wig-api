@@ -27,6 +27,21 @@ const productSchema = new mongoose.Schema(
       default: "",
     },
 
+    length: {
+      type: String, // e.g. 12, 14, 16, 18
+      trim: true,
+    },
+
+    color: {
+      type: String, // e.g. Black, Brown, Blonde
+      trim: true,
+    },
+
+    texture: {
+      type: String, // e.g. Straight, Body Wave, Curly
+      trim: true,
+    },
+
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
@@ -54,6 +69,18 @@ productSchema.pre("save", function (next) {
   else if (this.quantity < 5)
     this.status = "low stock"; // threshold for low stock
   else this.status = "in stock";
+
+  if (this.length) {
+    this.length = this.length.toLowerCase().trim();
+  }
+
+  if (this.color) {
+    this.color = this.color.toLowerCase().trim();
+  }
+
+  if (this.texture) {
+    this.texture = this.texture.toLowerCase().trim();
+  }
   next();
 });
 // Prevent OverwriteModelError
